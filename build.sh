@@ -4,7 +4,7 @@ set -e
 VERSION="0.1.0"
 BUILDPATH="build/zip"
 
-rm -rf $BUILDPATH
+rm -rf $BUILDPATH || true
 mkdir -p $BUILDPATH
 cp -r overrides $BUILDPATH/minecraft
 mkdir -p $BUILDPATH/minecraft/mods
@@ -18,5 +18,5 @@ while read -r mod; do
 done <../../../../mods.txt
 cd ../..
 
-rm ../*.zip
+rm ../*.zip || true
 zip -r "../ac4-$VERSION.zip" ./*

@@ -18,7 +18,8 @@ https://cdn.modrinth.com/data/ls90k6B8/versions/0.7.2/simplepipes-all-0.7.2.jar
 https://cdn.modrinth.com/data/kXygSBVI/versions/5.0.0-alpha.2/traverse-5.0.0-alpha.2.jar
 https://cdn.modrinth.com/data/hvFnDODi/versions/0.1.2/lazydfu-0.1.2.jar
 https://cdn.modrinth.com/data/LMEONxlN/versions/1.4.1-BETA+1.18/lifts-1.4.1-BETA%2B1.18.jar
-https://cdn.modrinth.com/data/q8MC5tW2/versions/2.6.12/bitsandchisels-2.6.12.jar
+# deactivated until crash is resolved
+#https://cdn.modrinth.com/data/q8MC5tW2/versions/2.6.12/bitsandchisels-2.6.12.jar
 https://cdn.modrinth.com/data/eldBwa5V/versions/1.100.6/cc-restitched-1.100.6.jar
 https://cdn.modrinth.com/data/yoEkK5RL/versions/2.3.2+fabric-1.18.2/purpeille-2.3.2%2Bfabric-1.18.2.jar
 https://cdn.modrinth.com/data/GUwDZ4ZU/versions/2.2.4+quilt/portal_cubed-2.2.4.jar
@@ -31,7 +32,8 @@ https://cdn.modrinth.com/data/WuFYdGVB/versions/2.0.10+fabric/flyingfluxery-3.0.
 https://cdn.modrinth.com/data/OrJTMhHF/versions/mc1.18-4.1/sync-mc1.18.2-4.1.jar
 https://cdn.modrinth.com/data/34431T56/versions/1.0.6+1.18.2/wthit-plugins-1.0.6%2B1.18.2.jar
 https://cdn.modrinth.com/data/yn9u3ypm/versions/2.0.3+1.18.2/graves-2.0.3%2B1.18.2.jar
-https://cdn.modrinth.com/data/IKpsG0nF/versions/1.6.8/paradise-lost-1.6.8%2B1.18.2.jar
+# disabled because crash with create
+#https://cdn.modrinth.com/data/IKpsG0nF/versions/1.6.8/paradise-lost-1.6.8%2B1.18.2.jar
 https://cdn.modrinth.com/data/zgaWtmrV/versions/1.29/arcanus-1.29.jar
 https://cdn.modrinth.com/data/F6KTit9k/versions/1.0.12/magitekmechs-fabric-MC1.18-1.0.12.jar
 https://cdn.modrinth.com/data/4KWv7wbN/versions/1.4.5/chisel-1.4.5%2B1.18.2.jar
@@ -54,3 +56,4 @@ https://edge.forgecdn.net/files/3798/506/RebornCore-5.2.0.jar
 https://edge.forgecdn.net/files/3827/255/geckolib-fabric-1.18-3.0.47.jar
 https://cdn.modrinth.com/data/9s6osm5g/versions/6.2.62/cloth-config-fabric-6.2.62.jar
 https://edge.forgecdn.net/files/3668/220/autoconfig1u-3.4.0.jar
+https://cdn.modrinth.com/data/5aaWibi9/versions/3.3.1/trinkets-3.3.1.jar

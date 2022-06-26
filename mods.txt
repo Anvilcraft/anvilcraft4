@@ -57,3 +57,13 @@ https://edge.forgecdn.net/files/3827/255/geckolib-fabric-1.18-3.0.47.jar
 https://cdn.modrinth.com/data/9s6osm5g/versions/6.2.62/cloth-config-fabric-6.2.62.jar
 https://edge.forgecdn.net/files/3668/220/autoconfig1u-3.4.0.jar
 https://cdn.modrinth.com/data/5aaWibi9/versions/3.3.1/trinkets-3.3.1.jar
+https://edge.forgecdn.net/files/3648/220/%5b1.18%2B%5d+Flight+Rings+1.6.2.jar
+https://edge.forgecdn.net/files/3824/538/ftb-chunks-fabric-1802.3.6-build.147.jar
+https://edge.forgecdn.net/files/3725/500/ftb-teams-fabric-1802.2.6-build.51.jar
+https://edge.forgecdn.net/files/3822/757/ftb-library-fabric-1802.3.6-build.123.jar
+https://edge.forgecdn.net/files/3725/671/ftb-ultimine-fabric-1802.3.3-build.55.jar
+https://edge.forgecdn.net/files/3796/516/Mine-Pop!+1.0-1.18.2+(FABRIC).jar
+https://edge.forgecdn.net/files/3807/435/Applied-Botanics-1.2.1.jar
+https://edge.forgecdn.net/files/3778/610/aofemotes-0.0.4+1.18.1.jar
+https://edge.forgecdn.net/files/3772/197/archon-0.2.4.jar
+https://cdn.modrinth.com/data/nU0bVIaL/versions/1.18.2-71.1-fabric/Patchouli-1.18.2-71.1-FABRIC.jar

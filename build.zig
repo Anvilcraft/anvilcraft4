@@ -34,12 +34,11 @@ pub fn main() !void {
 
     var entry = c.archive_entry_new();
     defer c.archive_entry_free(entry);
-    entrySetDir(entry.?);
-    c.archive_entry_set_size(entry, 0);
-    c.archive_entry_set_pathname(entry, "minecraft/");
-    try handleArchiveErr(c.archive_write_header(zip, entry), zip);
-    c.archive_entry_set_pathname(entry, "minecraft/mods/");
-    try handleArchiveErr(c.archive_write_header(zip, entry), zip);
+
+    try archiveCreateDir(zip.?, entry.?, "minecraft/");
+    try archiveCreateDir(zip.?, entry.?, "minecraft/mods/");
+
+    try installHaxe(zip.?, entry.?, &buf);
 
     var overrides = try std.fs.cwd().openDir("overrides", .{ .iterate = true });
     defer overrides.close();
@@ -55,15 +54,9 @@ pub fn main() !void {
                     &[_][]const u8{ "minecraft/", e.path, "/\x00" },
                 );
                 defer std.heap.c_allocator.free(path);
-                entrySetDir(entry.?);
-                c.archive_entry_set_pathname(entry, path.ptr);
-                try handleArchiveErr(c.archive_write_header(zip, entry), zip);
+                try archiveCreateDir(zip.?, entry.?, path.ptr);
             },
             .File => {
-                var file = try overrides.openFile(e.path, .{});
-                const stat = try file.stat();
-                entrySetFile(entry.?);
-                c.archive_entry_set_size(entry, @intCast(i64, stat.size));
                 const path = try std.mem.concatWithSentinel(
                     std.heap.c_allocator,
                     u8,
@@ -71,30 +64,30 @@ pub fn main() !void {
                     0,
                 );
                 defer std.heap.c_allocator.free(path);
-                c.archive_entry_set_pathname(entry, path);
-                try handleArchiveErr(c.archive_write_header(zip, entry), zip);
+                var file = try overrides.openFile(e.path, .{});
+                defer file.close();
 
-                var read = try file.read(&buf);
-                while (read != 0) {
-                    _ = c.archive_write_data(zip, &buf, read);
-                    read = try file.read(&buf);
-                }
+                try archiveFile(
+                    zip.?,
+                    entry.?,
+                    &buf,
+                    path,
+                    file,
+                );
             },
             else => {},
         }
     }
 
-    entrySetFile(entry.?);
-    var file = try std.fs.cwd().openFile("mmc-pack.json", .{});
-    c.archive_entry_set_pathname(entry, "mmc-pack.json");
-    c.archive_entry_set_size(entry, @intCast(i64, (try file.stat()).size));
-    try handleArchiveErr(c.archive_write_header(zip, entry), zip);
-
-    var read = try file.read(&buf);
-    while (read != 0) {
-        _ = c.archive_write_data(zip, &buf, read);
-        read = try file.read(&buf);
-    }
+    var mmc_pack_file = try std.fs.cwd().openFile("mmc-pack.json", .{});
+    defer mmc_pack_file.close();
+    try archiveFile(
+        zip.?,
+        entry.?,
+        &buf,
+        "mmc-pack.json",
+        mmc_pack_file,
+    );
 
     const instance_cfg_data = "InstanceType=OneSix";
     c.archive_entry_set_pathname(entry, "instance.cfg");
@@ -122,6 +115,64 @@ pub fn main() !void {
     };
 
     try handleArchiveErr(c.archive_write_close(zip), zip);
+}
+
+fn archiveFile(
+    archive: *c.archive,
+    entry: *c.archive_entry,
+    buf: []u8,
+    name: [*c]const u8,
+    file: std.fs.File,
+) !void {
+    entrySetFile(entry);
+    c.archive_entry_set_pathname(entry, name);
+    c.archive_entry_set_size(entry, @intCast(i64, (try file.stat()).size));
+    try handleArchiveErr(c.archive_write_header(archive, entry), archive);
+
+    var read = try file.read(buf);
+    while (read != 0) {
+        _ = c.archive_write_data(archive, buf.ptr, read);
+        read = try file.read(buf);
+    }
+}
+
+/// `name` must end with '/'!
+fn archiveCreateDir(
+    archive: *c.archive,
+    entry: *c.archive_entry,
+    name: [*c]const u8,
+) !void {
+    entrySetDir(entry);
+    c.archive_entry_set_pathname(entry, name);
+    try handleArchiveErr(c.archive_write_header(archive, entry), archive);
+}
+
+fn installHaxe(archive: *c.archive, entry: *c.archive_entry, buf: []u8) !void {
+    const term = try std.ChildProcess.init(
+        &.{ "haxe", "kubejs/build.hxml" },
+        std.heap.c_allocator,
+    ).spawnAndWait();
+
+    const term_n = switch (term) {
+        .Exited => |n| @intCast(u32, n),
+        .Signal, .Unknown, .Stopped => |n| n,
+    };
+
+    if (term_n != 0)
+        return error.BuildHaxeError;
+
+    try archiveCreateDir(archive, entry, "minecraft/kubejs/");
+    try archiveCreateDir(archive, entry, "minecraft/kubejs/server_scripts/");
+
+    var file = try std.fs.cwd().openFile("build/kubejs-server.js", .{});
+    defer file.close();
+    try archiveFile(
+        archive,
+        entry,
+        buf,
+        "minecraft/kubejs/server_scripts/script.js",
+        file,
+    );
 }
 
 fn readMods(list: *std.ArrayList([]u8), alloc: std.mem.Allocator) !void {
@@ -253,12 +304,14 @@ fn downloadMods(
 }
 
 fn entrySetDir(entry: *c.archive_entry) void {
-    c.archive_entry_set_mode(entry, c.S_IFDIR | 0777);
-    c.archive_entry_set_size(entry, 0);
+    c.archive_entry_set_filetype(entry, c.S_IFDIR);
+    c.archive_entry_set_perm(entry, 0o755);
+    c.archive_entry_unset_size(entry);
 }
 
 fn entrySetFile(entry: *c.archive_entry) void {
-    c.archive_entry_set_mode(entry, c.S_IFREG | 0777);
+    c.archive_entry_set_filetype(entry, c.S_IFREG);
+    c.archive_entry_set_perm(entry, 0o644);
 }
 
 fn handleCurlErr(code: c.CURLcode) !void {

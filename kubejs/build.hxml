@@ -1,0 +1,5 @@
+# invoke haxe from the repository root
+-cp kubejs
+-main Main
+-lib kubejs
+-js build/kubejs-server.js

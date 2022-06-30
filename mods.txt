@@ -56,7 +56,6 @@ https://mediafiles.forgecdn.net/files/3827/255/geckolib-fabric-1.18-3.0.47.jar
 https://cdn.modrinth.com/data/9s6osm5g/versions/6.2.62/cloth-config-fabric-6.2.62.jar
 https://mediafiles.forgecdn.net/files/3668/220/autoconfig1u-3.4.0.jar
 https://cdn.modrinth.com/data/5aaWibi9/versions/3.3.1/trinkets-3.3.1.jar
-https://mediafiles.forgecdn.net/files/3648/220/%5b1.18%2B%5d+Flight+Rings+1.6.2.jar
 https://mediafiles.forgecdn.net/files/3824/538/ftb-chunks-fabric-1802.3.6-build.147.jar
 https://mediafiles.forgecdn.net/files/3725/500/ftb-teams-fabric-1802.2.6-build.51.jar
 https://mediafiles.forgecdn.net/files/3822/757/ftb-library-fabric-1802.3.6-build.123.jar

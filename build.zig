@@ -38,8 +38,6 @@ pub fn main() !void {
     try archiveCreateDir(zip.?, entry.?, "minecraft/");
     try archiveCreateDir(zip.?, entry.?, "minecraft/mods/");
 
-    try installHaxe(zip.?, entry.?, &buf);
-
     var overrides = try std.fs.cwd().openDir("overrides", .{ .iterate = true });
     defer overrides.close();
     var walker = try overrides.walk(std.heap.c_allocator);
@@ -145,34 +143,6 @@ fn archiveCreateDir(
     entrySetDir(entry);
     c.archive_entry_set_pathname(entry, name);
     try handleArchiveErr(c.archive_write_header(archive, entry), archive);
-}
-
-fn installHaxe(archive: *c.archive, entry: *c.archive_entry, buf: []u8) !void {
-    const term = try std.ChildProcess.init(
-        &.{ "haxe", "kubejs/build.hxml" },
-        std.heap.c_allocator,
-    ).spawnAndWait();
-
-    const term_n = switch (term) {
-        .Exited => |n| @intCast(u32, n),
-        .Signal, .Unknown, .Stopped => |n| n,
-    };
-
-    if (term_n != 0)
-        return error.BuildHaxeError;
-
-    try archiveCreateDir(archive, entry, "minecraft/kubejs/");
-    try archiveCreateDir(archive, entry, "minecraft/kubejs/server_scripts/");
-
-    var file = try std.fs.cwd().openFile("build/kubejs-server.js", .{});
-    defer file.close();
-    try archiveFile(
-        archive,
-        entry,
-        buf,
-        "minecraft/kubejs/server_scripts/script.js",
-        file,
-    );
 }
 
 fn readMods(list: *std.ArrayList([]u8), alloc: std.mem.Allocator) !void {

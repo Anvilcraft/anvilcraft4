@@ -7,7 +7,6 @@ steps:
       - apt update
       - apt install -y
           curl
-          haxe
           jq
           libarchive-dev
           libcurl4-openssl-dev

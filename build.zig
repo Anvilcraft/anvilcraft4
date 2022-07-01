@@ -38,6 +38,8 @@ pub fn main() !void {
     try archiveCreateDir(zip.?, entry.?, "minecraft/");
     try archiveCreateDir(zip.?, entry.?, "minecraft/mods/");
 
+    const writer = ArchiveWriter{ .context = zip.? };
+
     var overrides = try std.fs.cwd().openDir("overrides", .{ .iterate = true });
     defer overrides.close();
     var walker = try overrides.walk(std.heap.c_allocator);
@@ -77,25 +79,13 @@ pub fn main() !void {
         }
     }
 
-    var mmc_pack_file = try std.fs.cwd().openFile("mmc-pack.json", .{});
-    defer mmc_pack_file.close();
-    try archiveFile(
-        zip.?,
-        entry.?,
-        &buf,
-        "mmc-pack.json",
-        mmc_pack_file,
-    );
+    try installMmcPackJson(zip.?, entry.?);
 
     const instance_cfg_data = "InstanceType=OneSix";
     c.archive_entry_set_pathname(entry, "instance.cfg");
     c.archive_entry_set_size(entry, instance_cfg_data.len);
     try handleArchiveErr(c.archive_write_header(zip, entry), zip);
-    _ = c.archive_write_data(
-        zip,
-        instance_cfg_data,
-        instance_cfg_data.len,
-    );
+    try writer.writeAll(instance_cfg_data);
 
     var mods_arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
     defer mods_arena.deinit();
@@ -115,6 +105,20 @@ pub fn main() !void {
     try handleArchiveErr(c.archive_write_close(zip), zip);
 }
 
+const ArchiveWriter = std.io.Writer(
+    *c.archive,
+    error{ArchiveError},
+    writeArchive,
+);
+
+fn writeArchive(archive: *c.archive, bytes: []const u8) error{ArchiveError}!usize {
+    const result = c.archive_write_data(archive, bytes.ptr, bytes.len);
+    if (result < 0) {
+        try handleArchiveErr(result, archive);
+    }
+    return @intCast(usize, result);
+}
+
 fn archiveFile(
     archive: *c.archive,
     entry: *c.archive_entry,
@@ -127,9 +131,10 @@ fn archiveFile(
     c.archive_entry_set_size(entry, @intCast(i64, (try file.stat()).size));
     try handleArchiveErr(c.archive_write_header(archive, entry), archive);
 
+    const writer = ArchiveWriter{ .context = archive };
     var read = try file.read(buf);
     while (read != 0) {
-        _ = c.archive_write_data(archive, buf.ptr, read);
+        try writer.writeAll(buf[0..read]);
         read = try file.read(buf);
     }
 }
@@ -143,6 +148,91 @@ fn archiveCreateDir(
     entrySetDir(entry);
     c.archive_entry_set_pathname(entry, name);
     try handleArchiveErr(c.archive_write_header(archive, entry), archive);
+}
+
+fn installMmcPackJson(archive: *c.archive, entry: *c.archive_entry) !void {
+    const Requires = struct {
+        uid: []const u8,
+        equals: ?[]const u8 = null,
+        suggests: ?[]const u8 = null,
+    };
+
+    const Component = struct {
+        cachedName: []const u8,
+        cachedRequires: ?[]const Requires = null,
+        cachedVersion: []const u8,
+        cachedVolatile: ?bool = null,
+        dependencyOnly: ?bool = null,
+        important: ?bool = null,
+        uid: []const u8,
+        version: []const u8,
+    };
+
+    const data = .{
+        .components = &[_]Component{
+            .{
+                .cachedName = "LWJGL 3",
+                .cachedVersion = "3.2.2",
+                .cachedVolatile = true,
+                .dependencyOnly = true,
+                .uid = "org.lwjgl3",
+                .version = "3.2.2",
+            },
+            .{
+                .cachedName = "Minecraft",
+                .cachedRequires = &.{
+                    .{
+                        .uid = "org.lwjgl3",
+                        .suggests = "3.2.2",
+                    },
+                },
+                .cachedVersion = settings.minecraft_version,
+                .important = true,
+                .uid = "net.minecraft",
+                .version = settings.minecraft_version,
+            },
+            .{
+                .cachedName = "Intermediary Mappings",
+                .cachedRequires = &.{
+                    .{
+                        .equals = settings.minecraft_version,
+                        .uid = "net.minecraft",
+                    },
+                },
+                .cachedVersion = settings.minecraft_version,
+                .cachedVolatile = true,
+                .dependencyOnly = true,
+                .uid = "net.fabricmc.intermediary",
+                .version = settings.minecraft_version,
+            },
+            .{
+                .cachedName = "Fabric Loader",
+                .cachedRequires = &.{
+                    .{
+                        .uid = "net.fabricmc.intermediary",
+                    },
+                },
+                .cachedVersion = settings.fabric_loader_version,
+                .uid = "net.fabricmc.fabric-loader",
+                .version = settings.fabric_loader_version,
+            },
+        },
+        .formatVersion = 1,
+    };
+
+    const json = try std.json.stringifyAlloc(
+        std.heap.c_allocator,
+        data,
+        .{ .emit_null_optional_fields = false },
+    );
+    defer std.heap.c_allocator.free(json);
+
+    entrySetFile(entry);
+    c.archive_entry_set_size(entry, @intCast(i64, json.len));
+    c.archive_entry_set_pathname(entry, "mmc-pack.json");
+
+    try handleArchiveErr(c.archive_write_header(archive, entry), archive);
+    try (ArchiveWriter{ .context = archive }).writeAll(json);
 }
 
 fn readMods(list: *std.ArrayList([]u8), alloc: std.mem.Allocator) !void {
@@ -213,6 +303,7 @@ fn downloadMods(
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_NOPROGRESS, @as(c_long, 0)));
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_FOLLOWLOCATION, @as(c_long, 1)));
 
+    const writer = ArchiveWriter{ .context = zip };
     var mod_buf = std.ArrayList(u8).init(std.heap.c_allocator);
     defer mod_buf.deinit();
     defer std.io.getStdOut().writeAll("\x1b[0\n") catch {};
@@ -261,11 +352,7 @@ fn downloadMods(
         c.archive_entry_set_pathname(entry, archive_path.ptr);
         c.archive_entry_set_size(entry, @intCast(i64, mod_buf.items.len));
         try handleArchiveErr(c.archive_write_header(zip, entry), zip);
-        _ = c.archive_write_data(
-            zip,
-            mod_buf.items.ptr,
-            mod_buf.items.len,
-        );
+        try writer.writeAll(mod_buf.items);
         std.io.getStdOut().writer().print(
             "\x1b[2K\r\x1b[34m{s}\n",
             .{filename.?},

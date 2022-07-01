@@ -18,8 +18,7 @@ https://cdn.modrinth.com/data/ls90k6B8/versions/0.7.2/simplepipes-all-0.7.2.jar
 https://cdn.modrinth.com/data/kXygSBVI/versions/5.0.0-alpha.2/traverse-5.0.0-alpha.2.jar
 https://cdn.modrinth.com/data/hvFnDODi/versions/0.1.2/lazydfu-0.1.2.jar
 https://cdn.modrinth.com/data/LMEONxlN/versions/1.4.1-BETA+1.18/lifts-1.4.1-BETA%2B1.18.jar
-# deactivated until crash is resolved
-#https://cdn.modrinth.com/data/q8MC5tW2/versions/2.6.12/bitsandchisels-2.6.12.jar
+https://cdn.modrinth.com/data/q8MC5tW2/versions/2.6.13/bitsandchisels-2.6.13.jar
 https://cdn.modrinth.com/data/eldBwa5V/versions/1.100.6/cc-restitched-1.100.6.jar
 https://cdn.modrinth.com/data/yoEkK5RL/versions/2.3.2+fabric-1.18.2/purpeille-2.3.2%2Bfabric-1.18.2.jar
 https://cdn.modrinth.com/data/GUwDZ4ZU/versions/2.2.4+quilt/portal_cubed-2.2.4.jar

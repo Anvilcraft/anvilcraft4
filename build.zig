@@ -220,19 +220,25 @@ fn installMmcPackJson(archive: *c.archive, entry: *c.archive_entry) !void {
         .formatVersion = 1,
     };
 
-    const json = try std.json.stringifyAlloc(
-        std.heap.c_allocator,
+    // We run the serializer twice, because we need to know the size ahead of time for zip.
+    // This is faster than allocating the json on the heap.
+    var counter = std.io.countingWriter(std.io.null_writer);
+    try std.json.stringify(
         data,
         .{ .emit_null_optional_fields = false },
+        counter.writer(),
     );
-    defer std.heap.c_allocator.free(json);
 
     entrySetFile(entry);
-    c.archive_entry_set_size(entry, @intCast(i64, json.len));
+    c.archive_entry_set_size(entry, @intCast(i64, counter.bytes_written));
     c.archive_entry_set_pathname(entry, "mmc-pack.json");
-
     try handleArchiveErr(c.archive_write_header(archive, entry), archive);
-    try (ArchiveWriter{ .context = archive }).writeAll(json);
+
+    try std.json.stringify(
+        data,
+        .{ .emit_null_optional_fields = false },
+        ArchiveWriter{ .context = archive },
+    );
 }
 
 fn readMods(list: *std.ArrayList([]u8), alloc: std.mem.Allocator) !void {

@@ -316,17 +316,33 @@ fn downloadMods(
     for (mods) |mod| {
         mod_buf.clearRetainingCapacity();
         var splits = std.mem.split(u8, mod, "/");
-        var filename: ?[]const u8 = null;
+        var filename_esc: ?[]const u8 = null;
         while (splits.next()) |split|
-            filename = split;
+            filename_esc = split;
 
-        if (filename == null or filename.?.len == 0) {
+        if (filename_esc == null or filename_esc.?.len == 0) {
             std.log.err("Failed to get filename of URL {s}", .{mod});
             return error.BorkedUrl;
         }
 
+        var filename_len: c_int = undefined;
+        var filename_cstr = c.curl_easy_unescape(
+            curl,
+            filename_esc.?.ptr,
+            @intCast(c_int, filename_esc.?.len),
+            &filename_len,
+        );
+        defer c.curl_free(filename_cstr);
+        var filename = filename_cstr[0..@intCast(usize, filename_len)];
+        
+        // Replace + with space in URL decoded filename
+        for (filename) |*ch| {
+            if (ch.* == '+') {
+                ch.* = ' ';
+            }
+        }
+
         try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_WRITEDATA, &mod_buf));
-        try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_XFERINFODATA, &filename));
         try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_XFERINFODATA, &filename));
 
         const mod_cstr = try std.cstr.addNullByte(std.heap.c_allocator, mod);
@@ -341,16 +357,13 @@ fn downloadMods(
 
         std.io.getStdOut().writer().print(
             "\x1b[2K\r\x1b[34m{s} \x1b[31mZipping...",
-            .{filename.?},
+            .{filename},
         ) catch {};
-
-        const file_cstr = try std.cstr.addNullByte(std.heap.c_allocator, filename.?);
-        defer std.heap.c_allocator.free(file_cstr);
 
         var archive_path = try std.mem.concatWithSentinel(
             std.heap.c_allocator,
             u8,
-            &[_][]const u8{ "minecraft/mods/", file_cstr },
+            &.{ "minecraft/mods/", filename },
             0,
         );
         defer std.heap.c_allocator.free(archive_path);
@@ -361,7 +374,7 @@ fn downloadMods(
         try writer.writeAll(mod_buf.items);
         std.io.getStdOut().writer().print(
             "\x1b[2K\r\x1b[34m{s}\n",
-            .{filename.?},
+            .{filename},
         ) catch {};
     }
 }

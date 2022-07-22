@@ -1,1 +1,2 @@
-- Initial release
+- Added FTB Ranks
+- Added Anvilcraft emotes

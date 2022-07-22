@@ -40,7 +40,7 @@ pub fn main() !void {
 
     const writer = ArchiveWriter{ .context = zip.? };
 
-    var overrides = try std.fs.cwd().openDir("overrides", .{ .iterate = true });
+    var overrides = try std.fs.cwd().openIterableDir("overrides", .{});
     defer overrides.close();
     var walker = try overrides.walk(std.heap.c_allocator);
     defer walker.deinit();
@@ -64,7 +64,7 @@ pub fn main() !void {
                     0,
                 );
                 defer std.heap.c_allocator.free(path);
-                var file = try overrides.openFile(e.path, .{});
+                var file = try overrides.dir.openFile(e.path, .{});
                 defer file.close();
 
                 try archiveFile(

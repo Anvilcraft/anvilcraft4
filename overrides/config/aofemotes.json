@@ -1,0 +1,22 @@
+{
+  "emotes": {
+    "agtech": "kubejs:emotes/agtech.png",
+    "alec": "kubejs:emotes/alec.png",
+    "anvil": "kubejs:emotes/anvil.png",
+    "drogen": "kubejs:emotes/drogen.png",
+    "gesichtsausdruck": "kubejs:emotes/gesichtsausdruck.png",
+    "itbyhf": "kubejs:emotes/itbyhf.png",
+    "jspy": "kubejs:emotes/jspy.png",
+    "kappa": "kubejs:emotes/kappa.png",
+    "mztewolf": "kubejs:emotes/mztewolf.png",
+    "namelessking": "kubejs:emotes/namelessking.png",
+    "pythno": "kubejs:emotes/pythno.png",
+    "realtox": "kubejs:emotes/realtox.png",
+    "sayfettin": "kubejs:emotes/sayfettin.png",
+    "scheucher": "kubejs:emotes/scheucher.png",
+    "sponglob": "kubejs:emotes/sponglob.png",
+    "surstroemming": "kubejs:emotes/surstroemming.png",
+    "tilera": "kubejs:emotes/tilera.png",
+    "waaas": "kubejs:emotes/waaas.png"
+  }
+}

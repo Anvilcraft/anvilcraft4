@@ -267,8 +267,14 @@ fn curlWriteCallback(
     return realsize;
 }
 
+const CurlInfo = struct {
+    filename: []const u8,
+    index: usize,
+    total: usize,
+};
+
 fn curlInfoCallback(
-    filename: *[]const u8,
+    info: *CurlInfo,
     dltotal: c.curl_off_t,
     dlnow: c.curl_off_t,
     ultotal: c.curl_off_t,
@@ -277,9 +283,11 @@ fn curlInfoCallback(
     _ = ultotal;
     _ = ulnow;
     std.io.getStdOut().writer().print(
-        "\x1b[2K\r\x1b[34m{s} \x1b[32m{}%",
+        "\r\x1b[34m[{d}/{d}] \x1b[97m{s} \x1b[32m{}%",
         .{
-            filename.*,
+            info.index,
+            info.total,
+            info.filename,
             if (dltotal != 0) @divTrunc(dlnow * 100, dltotal) else 0,
         },
     ) catch {};
@@ -312,8 +320,19 @@ fn downloadMods(
     const writer = ArchiveWriter{ .context = zip };
     var mod_buf = std.ArrayList(u8).init(std.heap.c_allocator);
     defer mod_buf.deinit();
-    defer std.io.getStdOut().writeAll("\x1b[0\n") catch {};
+    var info = CurlInfo{
+        .filename = "",
+        .index = 0,
+        .total = mods.len,
+    };
+    try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_XFERINFODATA, &info));
+    // hide cursor
+    std.io.getStdOut().writeAll("\x1b[?25l") catch {};
+    // show cursor & reset
+    defer std.io.getStdOut().writeAll("\x1b[?25h\x1b[0\n") catch {};
     for (mods) |mod| {
+        info.index += 1;
+
         mod_buf.clearRetainingCapacity();
         var splits = std.mem.split(u8, mod, "/");
         var filename_esc: ?[]const u8 = null;
@@ -334,7 +353,7 @@ fn downloadMods(
         );
         defer c.curl_free(filename_cstr);
         var filename = filename_cstr[0..@intCast(usize, filename_len)];
-        
+
         // Replace + with space in URL decoded filename
         for (filename) |*ch| {
             if (ch.* == '+') {
@@ -342,8 +361,9 @@ fn downloadMods(
             }
         }
 
+        info.filename = filename;
+
         try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_WRITEDATA, &mod_buf));
-        try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_XFERINFODATA, &filename));
 
         const mod_cstr = try std.cstr.addNullByte(std.heap.c_allocator, mod);
         defer std.heap.c_allocator.free(mod_cstr);
@@ -356,8 +376,8 @@ fn downloadMods(
         try handleCurlErr(c.curl_easy_perform(curl));
 
         std.io.getStdOut().writer().print(
-            "\x1b[2K\r\x1b[34m{s} \x1b[31mZipping...",
-            .{filename},
+            "\r\x1b[34m[{d}/{d}] \x1b[97m{s} \x1b[31mZipping...",
+            .{ info.index, info.total, info.filename },
         ) catch {};
 
         var archive_path = try std.mem.concatWithSentinel(
@@ -373,8 +393,8 @@ fn downloadMods(
         try handleArchiveErr(c.archive_write_header(zip, entry), zip);
         try writer.writeAll(mod_buf.items);
         std.io.getStdOut().writer().print(
-            "\x1b[2K\r\x1b[34m{s}\n",
-            .{filename},
+            "\x1b[2K\r\x1b[34m[{d}/{d}] \x1b[97m{s}\n",
+            .{ info.index, info.total, info.filename },
         ) catch {};
     }
 }

@@ -35,7 +35,6 @@ https://cdn.modrinth.com/data/yn9u3ypm/versions/2.0.3+1.18.2/graves-2.0.3%2B1.18
 https://cdn.modrinth.com/data/zgaWtmrV/versions/1.29/arcanus-1.29.jar
 https://cdn.modrinth.com/data/F6KTit9k/versions/1.0.12/magitekmechs-fabric-MC1.18-1.0.12.jar
 https://cdn.modrinth.com/data/1IjD5062/versions/2.0.0+1.18.2/continuity-2.0.0%2B1.18.2.jar
-https://cdn.modrinth.com/data/WbwMfRsz/versions/1.3.4/terramine-1.3.4%2B1.18.2.jar
 https://mediafiles.forgecdn.net/files/3759/591/indrev-1.14.0-BETA.jar
 https://mediafiles.forgecdn.net/files/3758/209/deepmoblearning-refabricated-1.18.2.jar
 https://mediafiles.forgecdn.net/files/3832/920/upc-0.0.2.jar
@@ -73,7 +72,6 @@ https://cdn.modrinth.com/data/du3UfiLL/versions/1.3.7/BOMD-1.3.7-1.18.2.jar
 https://cdn.modrinth.com/data/4KWv7wbN/versions/1.4.5/chisel-1.4.5%2B1.18.2.jar
 https://cdn.modrinth.com/data/nDHcEOt3/versions/0.5.0+Fabric-1.18.2/consistency_plus-0.5.0%2B1.18.2-fabric.jar
 https://cdn.modrinth.com/data/D2Q91keW/versions/1.8.0/Earth2Java-1.8.0%2B1.18.2.jar
-https://cdn.modrinth.com/data/kCMvEtYh/versions/1.18.2-1.1.2a/earthbounds-1.18.2-1.1.2a.jar
 https://cdn.modrinth.com/data/YV7Z5rZ3/versions/7.4.0-beta.4+fabric/expandedstorage-7.4.0-beta.4%2B1.18.2-fabric.jar
 https://cdn.modrinth.com/data/KV8SBboh/versions/1.4.0-beta.2+fabric/ellemes-container-library-1.4.0-beta.2%2B1.18.2-fabric.jar
 https://cdn.modrinth.com/data/VXtwLg17/versions/1.2.1-BETA+1.18/extra-generators-1.2.1-BETA%2B1.18.jar

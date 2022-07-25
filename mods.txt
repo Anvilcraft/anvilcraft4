@@ -29,7 +29,8 @@ https://cdn.modrinth.com/data/lhGA9TYQ/versions/4.5.74+fabric/architectury-4.5.7
 https://cdn.modrinth.com/data/WuFYdGVB/versions/2.0.10+fabric/flyingfluxery-3.0.10.jar
 https://cdn.modrinth.com/data/OrJTMhHF/versions/mc1.18-4.1/sync-mc1.18.2-4.1.jar
 https://cdn.modrinth.com/data/34431T56/versions/1.0.6+1.18.2/wthit-plugins-1.0.6%2B1.18.2.jar
-https://cdn.modrinth.com/data/yn9u3ypm/versions/2.0.3+1.18.2/graves-2.0.3%2B1.18.2.jar
+# causes crashes
+#https://cdn.modrinth.com/data/yn9u3ypm/versions/2.0.3+1.18.2/graves-2.0.3%2B1.18.2.jar
 # disabled because crash with create
 #https://cdn.modrinth.com/data/IKpsG0nF/versions/1.6.8/paradise-lost-1.6.8%2B1.18.2.jar
 https://cdn.modrinth.com/data/zgaWtmrV/versions/1.29/arcanus-1.29.jar
@@ -110,3 +111,5 @@ https://mediafiles.forgecdn.net/files/3599/719/ftb-ranks-fabric-1801.1.6-build.2
 https://cdn.modrinth.com/data/yM94ont6/versions/4.1.6+1.18.2-fabric/notenoughcrashes-4.1.6%2B1.18.2-fabric.jar
 https://cdn.modrinth.com/data/u5Ic2U1u/versions/1.10.2+mc1.18.2/mousewheelie-1.10.2%2Bmc1.18.2.jar
 https://mediafiles.forgecdn.net/files/3793/108/polymorph-fabric-0.0.21-1.18.2.jar
+https://cdn.modrinth.com/data/sGmHWmeL/versions/1.1.1+1.17/mixintrace-1.1.1%2B1.17.jar
+https://cdn.modrinth.com/data/OvlwmUdC/versions/1.9.8-BETA+1.18/kibe-1.9.8-BETA%2B1.18.jar

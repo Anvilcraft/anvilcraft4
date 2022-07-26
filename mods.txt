@@ -25,7 +25,7 @@ https://cdn.modrinth.com/data/GUwDZ4ZU/versions/2.2.4+quilt/portal_cubed-2.2.4.j
 https://cdn.modrinth.com/data/6AQIaxuO/versions/fabric-4.11.0/wthit-fabric-4.11.0.jar
 https://cdn.modrinth.com/data/ftdbN0KK/versions/fabric-0.1.2/badpackets-fabric-0.1.2.jar
 https://cdn.modrinth.com/data/KZO4S4DO/versions/3.0.0-alpha-fabric/Powah-3.0.0-alpha.jar
-https://cdn.modrinth.com/data/lhGA9TYQ/versions/4.5.74+fabric/architectury-4.5.74-fabric.jar
+https://mediafiles.forgecdn.net/files/3893/734/architectury-4.6.77-fabric.jar
 https://cdn.modrinth.com/data/WuFYdGVB/versions/2.0.10+fabric/flyingfluxery-3.0.10.jar
 https://cdn.modrinth.com/data/OrJTMhHF/versions/mc1.18-4.1/sync-mc1.18.2-4.1.jar
 https://cdn.modrinth.com/data/34431T56/versions/1.0.6+1.18.2/wthit-plugins-1.0.6%2B1.18.2.jar
@@ -113,3 +113,4 @@ https://cdn.modrinth.com/data/u5Ic2U1u/versions/1.10.2+mc1.18.2/mousewheelie-1.1
 https://mediafiles.forgecdn.net/files/3793/108/polymorph-fabric-0.0.21-1.18.2.jar
 https://cdn.modrinth.com/data/sGmHWmeL/versions/1.1.1+1.17/mixintrace-1.1.1%2B1.17.jar
 https://cdn.modrinth.com/data/OvlwmUdC/versions/1.9.8-BETA+1.18/kibe-1.9.8-BETA%2B1.18.jar
+https://mediafiles.forgecdn.net/files/3875/410/BuildingWands_mc1.18.2-2.6_beta-fabric.jar

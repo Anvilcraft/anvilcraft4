@@ -1,7 +1,6 @@
-- added Mouse Wheelie
-- added Not Enough Crashes
-- added Polymorph (recipe conflict fix)
-- fixed recipe conflicts
-- removed earthbounds (causes crashes)
-- removed terramine (causes too many crashes and has unbalanced demon eyes)
-
+- added Kibe
+- added Building Wands
+- removed Universal Graves from client
+- added some emotes
+- updated Architectury
+- fixed client crashes (hopefully)

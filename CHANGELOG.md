@@ -1,6 +1,8 @@
-- added Kibe
-- added Building Wands
-- removed Universal Graves from client
-- added some emotes
-- updated Architectury
-- fixed client crashes (hopefully)
+- added MoStructures 
+- added custom window title and icon
+- changed tempad recipes
+- fixed austri3Fix emote (the irony lol)
+- fixed recipes
+- fixed some tags
+- updated options.txt
+- waystones in foreign claims are now usable

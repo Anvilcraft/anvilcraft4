@@ -1,8 +1,1 @@
-- added MoStructures 
-- added custom window title and icon
-- changed tempad recipes
-- fixed austri3Fix emote (the irony lol)
-- fixed recipes
-- fixed some tags
-- updated options.txt
-- waystones in foreign claims are now usable
+- removed exploitable grinder recipes

@@ -1,15 +1,31 @@
 function recipes(ev) {
-    ev.remove({output: "tempad:tempad"});
-
     // conflicts with copper nuggets
     ev.remove({output: "redstonebits:copper_button"});
+
+    const removeBrokenGrinderRecipe = metal => {
+        // This recipe allows to turn ingots back into raw ores,
+        // allowing infinite duplication.
+        ev.remove({
+            type: "techreborn:industrial_grinder",
+            input: `#c:${metal}_ingots`,
+            output: `#c:raw_${metal}_ores`
+        });
+    };
+    removeBrokenGrinderRecipe("copper");
+    removeBrokenGrinderRecipe("gold");
+    removeBrokenGrinderRecipe("iridium");
+    removeBrokenGrinderRecipe("iron");
+    removeBrokenGrinderRecipe("lead");
+    removeBrokenGrinderRecipe("silver");
+    removeBrokenGrinderRecipe("tin");
+    removeBrokenGrinderRecipe("tungsten");
+    removeBrokenGrinderRecipe("zinc");
 
     // this recipe makes alectrum out of copper. wtf.
     ev.remove({
         type: "create:mixing",
         output: "techreborn:electrum_ingot",
     });
-
     ev.custom({
         type: "create:mixing",
         ingredients: [
@@ -29,6 +45,7 @@ function recipes(ev) {
         C: "#c:copper_ingots",
     });
 
+    ev.remove({output: "tempad:tempad"});
     ev.shaped("tempad:tempad", [
         "GGG",
         "PCD",
@@ -39,7 +56,6 @@ function recipes(ev) {
         C: "powah:ender_core",
         D: "techreborn:digital_display",
     });
-
     ev.shaped("tempad:he_who_remains_tempad", [
         "ITF",
         "NSN",

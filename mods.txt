@@ -114,5 +114,5 @@ https://mediafiles.forgecdn.net/files/3793/108/polymorph-fabric-0.0.21-1.18.2.ja
 https://cdn.modrinth.com/data/sGmHWmeL/versions/1.1.1+1.17/mixintrace-1.1.1%2B1.17.jar
 https://cdn.modrinth.com/data/OvlwmUdC/versions/1.9.8-BETA+1.18/kibe-1.9.8-BETA%2B1.18.jar
 https://mediafiles.forgecdn.net/files/3875/410/BuildingWands_mc1.18.2-2.6_beta-fabric.jar
-https://cdn.tilera.xyz/minecraft/mods/palettefix/palettefix-1.0.0.jar
+https://git.tilera.org/api/packages/tilera/generic/palettefix/1.0.0/palettefix-1.0.0.jar
 https://cdn.modrinth.com/data/PTGd6dWp/versions/1.4.2+1.18.2/mostructures-1.4.2%2B1.18.2.jar

@@ -1,1 +1,2 @@
-- removed exploitable grinder recipes
+- fixed some tags and recipes
+- removed ae2 spatial anchor (broken on fabric)

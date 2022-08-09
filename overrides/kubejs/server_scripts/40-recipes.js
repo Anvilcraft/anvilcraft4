@@ -68,6 +68,16 @@ function recipes(ev) {
         I: "dimdoors:infrangible_fiber",
         F: "dimdoors:frayed_filament",
     });
+
+    // broken on fabric
+    ev.remove({
+        output: "ae2:spatial_anchor",
+    });
+
+    // duplicate
+    ev.remove({
+        id: "techreborn:grinder/nether_lapis_ore",
+    });
 }
 
 onEvent("recipes", recipes);

@@ -45,18 +45,25 @@ pub fn main() !void {
     var walker = try overrides.walk(std.heap.c_allocator);
     defer walker.deinit();
 
+    const stdout = std.io.getStdOut().writer();
     while (try walker.next()) |e| {
         switch (e.kind) {
             .Directory => {
-                const path = try std.mem.concat(
+                stdout.print(
+                    "Writing Directory\t\x1b[34m{s}/\x1b[0m\n",
+                    .{e.path},
+                ) catch {};
+                const path = try std.mem.concatWithSentinel(
                     std.heap.c_allocator,
                     u8,
-                    &[_][]const u8{ "minecraft/", e.path, "/\x00" },
+                    &[_][]const u8{ "minecraft/", e.path },
+                    0,
                 );
                 defer std.heap.c_allocator.free(path);
                 try archiveCreateDir(zip.?, entry.?, path.ptr);
             },
             .File => {
+                stdout.print("Writing File\t\t\x1b[34m{s}\x1b[0m\n", .{e.path}) catch {};
                 const path = try std.mem.concatWithSentinel(
                     std.heap.c_allocator,
                     u8,
@@ -81,11 +88,10 @@ pub fn main() !void {
 
     try installMmcPackJson(zip.?, entry.?);
 
-    const instance_cfg_data = "InstanceType=OneSix";
     c.archive_entry_set_pathname(entry, "instance.cfg");
-    c.archive_entry_set_size(entry, instance_cfg_data.len);
+    c.archive_entry_set_size(entry, settings.instance_cfg_data.len);
     try handleArchiveErr(c.archive_write_header(zip, entry), zip);
-    try writer.writeAll(instance_cfg_data);
+    try writer.writeAll(settings.instance_cfg_data);
 
     var mods_arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
     defer mods_arena.deinit();
@@ -132,11 +138,9 @@ fn archiveFile(
     try handleArchiveErr(c.archive_write_header(archive, entry), archive);
 
     const writer = ArchiveWriter{ .context = archive };
-    var read = try file.read(buf);
-    while (read != 0) {
-        try writer.writeAll(buf[0..read]);
-        read = try file.read(buf);
-    }
+    try std.fifo.LinearFifo(u8, .Slice)
+        .init(buf)
+        .pump(file.reader(), writer);
 }
 
 /// `name` must end with '/'!
@@ -271,6 +275,7 @@ const CurlInfo = struct {
     filename: []const u8,
     index: usize,
     total: usize,
+    mod_number_width: usize,
 };
 
 fn curlInfoCallback(
@@ -283,12 +288,13 @@ fn curlInfoCallback(
     _ = ultotal;
     _ = ulnow;
     std.io.getStdOut().writer().print(
-        "\r\x1b[34m[{d}/{d}] \x1b[97m{s} \x1b[32m{}%",
+        "\r\x1b[34m[{d:[4]}/{d}] \x1b[97m{s} \x1b[32m{}%",
         .{
             info.index,
             info.total,
             info.filename,
             if (dltotal != 0) @divTrunc(dlnow * 100, dltotal) else 0,
+            info.mod_number_width,
         },
     ) catch {};
     return 0;
@@ -317,6 +323,8 @@ fn downloadMods(
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_NOPROGRESS, @as(c_long, 0)));
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_FOLLOWLOCATION, @as(c_long, 1)));
 
+    const mod_number_width = std.math.log10(mods.len) + 1;
+
     const writer = ArchiveWriter{ .context = zip };
     var mod_buf = std.ArrayList(u8).init(std.heap.c_allocator);
     defer mod_buf.deinit();
@@ -324,6 +332,7 @@ fn downloadMods(
         .filename = "",
         .index = 0,
         .total = mods.len,
+        .mod_number_width = mod_number_width,
     };
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_XFERINFODATA, &info));
     // hide cursor
@@ -376,8 +385,8 @@ fn downloadMods(
         try handleCurlErr(c.curl_easy_perform(curl));
 
         std.io.getStdOut().writer().print(
-            "\r\x1b[34m[{d}/{d}] \x1b[97m{s} \x1b[31mZipping...",
-            .{ info.index, info.total, info.filename },
+            "\r\x1b[34m[{d:[3]}/{d}] \x1b[97m{s} \x1b[31mZipping...",
+            .{ info.index, info.total, info.filename, mod_number_width },
         ) catch {};
 
         var archive_path = try std.mem.concatWithSentinel(
@@ -393,8 +402,8 @@ fn downloadMods(
         try handleArchiveErr(c.archive_write_header(zip, entry), zip);
         try writer.writeAll(mod_buf.items);
         std.io.getStdOut().writer().print(
-            "\x1b[2K\r\x1b[34m[{d}/{d}] \x1b[97m{s}\n",
-            .{ info.index, info.total, info.filename },
+            "\x1b[2K\r\x1b[34m[{d:[3]}/{d}] \x1b[97m{s}\n",
+            .{ info.index, info.total, info.filename, mod_number_width },
         ) catch {};
     }
 }

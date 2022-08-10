@@ -1,2 +1,3 @@
 - fixed some tags and recipes
 - removed ae2 spatial anchor (broken on fabric)
+- added `/rtp` command

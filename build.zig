@@ -78,7 +78,7 @@ pub fn main() !void {
                     zip.?,
                     entry.?,
                     &buf,
-                    path,
+                    path.ptr,
                     file,
                 );
             },
@@ -138,9 +138,8 @@ fn archiveFile(
     try handleArchiveErr(c.archive_write_header(archive, entry), archive);
 
     const writer = ArchiveWriter{ .context = archive };
-    try std.fifo.LinearFifo(u8, .Slice)
-        .init(buf)
-        .pump(file.reader(), writer);
+    var fifo = std.fifo.LinearFifo(u8, .Slice).init(buf);
+    try fifo.pump(file.reader(), writer);
 }
 
 /// `name` must end with '/'!
@@ -313,12 +312,12 @@ fn downloadMods(
     try handleCurlErr(c.curl_easy_setopt(
         curl,
         c.CURLOPT_WRITEFUNCTION,
-        curlWriteCallback,
+        &curlWriteCallback,
     ));
     try handleCurlErr(c.curl_easy_setopt(
         curl,
         c.CURLOPT_XFERINFOFUNCTION,
-        curlInfoCallback,
+        &curlInfoCallback,
     ));
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_NOPROGRESS, @as(c_long, 0)));
     try handleCurlErr(c.curl_easy_setopt(curl, c.CURLOPT_FOLLOWLOCATION, @as(c_long, 1)));
@@ -380,7 +379,7 @@ fn downloadMods(
         try handleCurlErr(c.curl_easy_setopt(
             curl,
             c.CURLOPT_URL,
-            @ptrCast([*c]const u8, mod_cstr),
+            mod_cstr.ptr,
         ));
         try handleCurlErr(c.curl_easy_perform(curl));
 
